@@ -1,16 +1,5 @@
-#include <Wire.h>
-#include "Action.h"
-#include <Arduino.h>
-
-#if 1
-int PWMA=16;
-int PWMB=10;
-int AIN1=17;
-int AIN2=4;
-int BIN1=5;
-int BIN2=6;
-
-
+// #include "./controller/MotorControl.hxx"
+#include "controller/MotorControl.h"
 #if 0
 void setup() {
     // put your setup code here, to run once:
@@ -290,38 +279,61 @@ void loop() {
 #if 1
 //PWM控制 PIN4 PIN12输出  控制电机转速
 //已经测试
-int freq = 10000;
-int channel = 0;
-int resolution = 8;
+
+// #define AIN1  22
+// #define AIN2  23
+// #define BIN1  19
+// #define BIN2  18
+// int freq = 10000;
+// int channel = 0;
+// int channel2 = 1;
+// int resolution = 8;
+
+control::MotorControl robot_control;
 
 void setup()
  {
     Serial.begin(115200);
-    ledcSetup(channel, freq, resolution);
-    ledcAttachPin(4, channel);
-    ledcAttachPin(12, channel);
+    // ledcSetup(channel, freq, resolution);
+    // ledcAttachPin(4, channel);
+    // ledcAttachPin(12, channel2);
+
+    // pinMode(AIN1, OUTPUT);
+    // pinMode(AIN2, OUTPUT);
+    // digitalWrite(AIN1, HIGH);
+    // digitalWrite(AIN2, LOW);
+
+    // pinMode(BIN1, OUTPUT);
+    // pinMode(BIN2, OUTPUT);
+    // digitalWrite(BIN1, HIGH);
+    // digitalWrite(BIN2, LOW);
+    robot_control.setWheelsPwnCfg(10000, 0, 8, 10000, 1, 8);
+    robot_control.initialize(AIN1, AIN2, PWM2, BIN1, BIN2, PWM2);
 }
 
 void loop() 
 {
-    ledcWriteTone(channel, freq);
-    
-    for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle=dutyCycle+10)
+    // ledcWriteTone(channel, freq);
+    int dutyCycle;
+    for (dutyCycle = 0; dutyCycle <= 255; dutyCycle=dutyCycle+10)
     {
+        Serial.print("value is: ");
         Serial.println(dutyCycle);
-        ledcWrite(channel, dutyCycle);
+        // ledcWrite(channel, dutyCycle);
+        robot_control.setLinearVelocity(dutyCycle, 255-dutyCycle);
         delay(1000);
     }
 
-    ledcWrite(channel, 125);
     
-    for (int freq = 255; freq < 10000; freq = freq + 250)
-    {
-        Serial.println(freq);
-        ledcWriteTone(channel, freq);
-        delay(1000);
-    }
+    
+    // for (int dutyCycle2 = 0; dutyCycle2 < 255; dutyCycle2 = dutyCycle2 + 10)
+    // {
+    //     Serial.println(dutyCycle2);
+    //     // ledcWriteTone(channel2, dutyCycle2);
+    //     ledcWrite(channel, dutyCycle -= 10);
+    //     ledcWrite(channel2, dutyCycle2);
+    //     delay(1000);
+    // }
 
 }
-#endif
 #endif
